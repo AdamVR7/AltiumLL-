@@ -455,24 +455,35 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
 
     Set PCBLib = PCBServer.GetCurrentPCBLibrary
     Set footprint = PCBLib.CurrentComponent
+    If footprint Is Nothing Then
+        DebugLog "[ERROR 101] Current PCB component is Nothing. STEP model not added."
+        Exit Sub
+    End If
 
-    ' КРИТИЧНО: используем Set для объектов!
+    ' РљР РРўРР§РќРћ: РёСЃРїРѕР»СЊР·СѓРµРј Set РґР»СЏ РѕР±СЉРµРєС‚РѕРІ!
     Set STEPmodel = PCBServer.PCBObjectFactory(eComponentBodyObject,eNoDimension,eCreate_Default)
     Set Model = STEPmodel.ModelFactory_FromFilename(STEPFileName, false)
+    If Model Is Nothing Then
+        DebugLog "[ERROR 102] ModelFactory_FromFilename failed: " & STEPFileName
+        Exit Sub
+    End If
 
+    RotX = replace(RotX,".",decChar)
+    RotY = replace(RotY,".",decChar)
+    RotZ = replace(RotZ,".",decChar)
     X = replace(X,".",decChar)
     Y = replace(Y,".",decChar)
     Z = replace(Z,".",decChar)
 
-    ' Устанавливаем параметры модели
+    ' РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РјРѕРґРµР»Рё
     Model.SetState RotX,RotY,RotZ,mmstocoord(z)
     STEPmodel.Model = Model
 
-    ' Добавляем модель к текущему футпринту
+    ' Р”РѕР±Р°РІР»СЏРµРј РјРѕРґРµР»СЊ Рє С‚РµРєСѓС‰РµРјСѓ С„СѓС‚РїСЂРёРЅС‚Сѓ
     footprint.AddPCBObject(STEPmodel)
     DebugLog "[105] 3D model ADDED"
 
-    ' Позиционируем модель
+    ' РџРѕР·РёС†РёРѕРЅРёСЂСѓРµРј РјРѕРґРµР»СЊ
     STEPmodel.MoveByXY mmstocoord(x), mmstocoord(y)
 
     
@@ -703,8 +714,8 @@ Dim aline
     aline.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
     aline.Corner = Point(MilsToCoord(x2), MilsToCoord(y2))
     aline.Color = 0 'Black
-    aline.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aline.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aline.OwnerPartId = SchComponent.CurrentPartID
+    aline.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aline)
 End Sub
 
@@ -722,8 +733,8 @@ Dim acircle
     acircle.Location = Point(MilsToCoord(x), MilsToCoord(y))
     acircle.Radius = MilsToCoord(rad)
     acircle.Color = 0 'Black
-    acircle.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    acircle.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    acircle.OwnerPartId = SchComponent.CurrentPartID
+    acircle.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(acircle)
 End Sub
 
@@ -741,8 +752,8 @@ Dim aarc
     aarc.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
     aarc.Radius = MilsToCoord(rad)
     aarc.Color = 0 'Black
-    aarc.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aarc.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aarc.OwnerPartId = SchComponent.CurrentPartID
+    aarc.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aarc)
 End Sub
 
@@ -765,8 +776,8 @@ Dim arectangle
     arectangle.Color = RGB(128,0,0)
     arectangle.AreaColor = RGB(255,255,176)
     arectangle.IsSolid = true
-    arectangle.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    arectangle.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    arectangle.OwnerPartId = SchComponent.CurrentPartID
+    arectangle.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(arectangle)
 End Sub
 
@@ -782,8 +793,8 @@ Dim aline
     aline.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
     aline.Corner = Point(MilsToCoord(x2), MilsToCoord(y2))
     aline.Color = RGB(0,0,255) 'Blue
-    aline.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aline.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aline.OwnerPartId = SchComponent.CurrentPartID
+    aline.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aline)
 End Sub
 
@@ -801,8 +812,8 @@ Dim acircle
     acircle.Location = Point(MilsToCoord(x), MilsToCoord(y))
     acircle.Radius = MilsToCoord(rad)
     acircle.Color = RGB(0,0,255) 'Blue
-    acircle.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    acircle.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    acircle.OwnerPartId = SchComponent.CurrentPartID
+    acircle.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(acircle)
 End Sub
 
@@ -820,8 +831,8 @@ Dim aarc
     aarc.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
     aarc.Radius = MilsToCoord(rad)
     aarc.Color = RGB(0,0,255) 'Blue
-    aarc.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aarc.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aarc.OwnerPartId = SchComponent.CurrentPartID
+    aarc.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aarc)
 End Sub
 
@@ -1040,6 +1051,7 @@ Sub ProcessCB(filename)
              SchComponent.Designator.Text = lineArray(3)
              SchComponent.ComponentDescription = lineArray(2)
              DebugLog "[208] Component parameters set"
+             SCHLib.CurrentSchComponent = SchComponent
           End if
        ElseIf lineArray(0) = "CreateLeftPin" And AddSCH Then
           CreateLeftPin lineArray(1), lineArray(2), lineArray(3), lineArray(4), lineArray(5), CInt(lineArray(6)), CInt(lineArray(7))
@@ -1556,10 +1568,10 @@ Function AddSchLib(component)
     LibraryIterator.AddFilter_ObjectSet(MkSet(eSchComponent))
     Set LibComp = LibraryIterator.FirstSchObject
     
-    ' ВАЖНО: проверяем, есть ли хоть один компонент (библиотека может быть пустой)
+    ' Р’РђР–РќРћ: РїСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё С…РѕС‚СЊ РѕРґРёРЅ РєРѕРјРїРѕРЅРµРЅС‚ (Р±РёР±Р»РёРѕС‚РµРєР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚РѕР№)
     If LibComp Is Nothing Then
         CurrentLib.SchIterator_Destroy(LibraryIterator)
-        AddSchLib = True  ' Библиотека пустая, можно добавлять
+        AddSchLib = True  ' Р‘РёР±Р»РёРѕС‚РµРєР° РїСѓСЃС‚Р°СЏ, РјРѕР¶РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ
         Exit Function
     End If
     
@@ -1569,16 +1581,16 @@ Function AddSchLib(component)
        LibCompNamePrev = LibCompNameNext
        If LibCompNameNext = component Then
           CurrentLib.SchIterator_Destroy(LibraryIterator)
-          AddSchLib = False  ' Компонент уже существует
+          AddSchLib = False  ' РљРѕРјРїРѕРЅРµРЅС‚ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
           Exit Function
        End If
        Set LibComp = LibraryIterator.NextSchObject
-       If LibComp Is Nothing Then Exit Do  ' Конец списка
+       If LibComp Is Nothing Then Exit Do  ' РљРѕРЅРµС† СЃРїРёСЃРєР°
        LibCompNameNext = LibComp.LibReference
     Loop Until LibCompNameNext = LibCompNamePrev
     
     CurrentLib.SchIterator_Destroy(LibraryIterator)
-    AddSchLib = True  ' Компонент не найден, можно добавлять
+    AddSchLib = True  ' РљРѕРјРїРѕРЅРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ, РјРѕР¶РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ
 End Function
 
 Sub chk_ShowInstructionClick(Sender)
@@ -2778,4 +2790,3 @@ outputStr = objRegExp.Replace(strtoclean,"_")
 
 strClean = outputStr
 End Function
-
