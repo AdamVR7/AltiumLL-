@@ -606,6 +606,12 @@ Sub CreateLeftPin(x, y, designator, name, length, pintype, pinnames)
     On Error Resume Next
 Dim apin
 
+If SchComponent Is Nothing Then
+    DebugLog "[ERROR 300] SchComponent is Nothing in CreateLeftPin. x=" & x & " y=" & y & " designator=" & designator & " name=" & name
+    MsgBox "ERROR: SchComponent is Nothing in CreateLeftPin", vbCritical
+    Exit Sub
+End If
+
 Set apin = SchServer.SchObjectFactory(ePin, eCreate_Default)
     If Err.Number <> 0 Then
         DebugLog "[ERROR 301] SchObjectFactory failed: " & Err.Description
@@ -647,9 +653,23 @@ SchComponent.AddSchObject(apin)
 End Sub
 
 Sub CreateRightPin(x, y, designator, name, length, pintype, pinnames)
+    DebugLog "[300] CreateRightPin START: " & designator
+    On Error Resume Next
 Dim apin
 
+If SchComponent Is Nothing Then
+    DebugLog "[ERROR 300] SchComponent is Nothing in CreateRightPin. x=" & x & " y=" & y & " designator=" & designator & " name=" & name
+    MsgBox "ERROR: SchComponent is Nothing in CreateRightPin", vbCritical
+    Exit Sub
+End If
+
 Set apin = SchServer.SchObjectFactory(ePin, eCreate_Default)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 301] SchObjectFactory failed: " & Err.Description
+        MsgBox "ERROR at SchObjectFactory: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[301] Pin object created"
 apin.PinLength = MilsToCoord(length)
 apin.Location = Point(MilsToCoord(x), MilsToCoord(y))
     If Err.Number <> 0 Then
@@ -665,15 +685,42 @@ apin.Name = name 'in single quotes
 apin.Electrical = pintype
 apin.ShowName = pinnames
 apin.OwnerPartId = SchComponent.CurrentPartID
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 306] OwnerPartId failed: " & Err.Description
+        MsgBox "ERROR at OwnerPartId: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[306] OwnerPartId set"
 apin.OwnerPartDisplayMode = SchComponent.DisplayMode
 SchComponent.AddSchObject(apin)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 307] AddSchObject failed: " & Err.Description
+        MsgBox "ERROR at AddSchObject: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[307] Pin ADDED to component"
+    On Error GoTo 0
 
 End Sub
 
 Sub CreateTopPin(x, y, designator, name, length, pintype, pinnames)
+    DebugLog "[300] CreateTopPin START: " & designator
+    On Error Resume Next
 Dim apin
 
+If SchComponent Is Nothing Then
+    DebugLog "[ERROR 300] SchComponent is Nothing in CreateTopPin. x=" & x & " y=" & y & " designator=" & designator & " name=" & name
+    MsgBox "ERROR: SchComponent is Nothing in CreateTopPin", vbCritical
+    Exit Sub
+End If
+
 Set apin = SchServer.SchObjectFactory(ePin, eCreate_Default)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 301] SchObjectFactory failed: " & Err.Description
+        MsgBox "ERROR at SchObjectFactory: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[301] Pin object created"
 apin.PinLength = MilsToCoord(length)
 apin.Location = Point(MilsToCoord(x), MilsToCoord(y))
     If Err.Number <> 0 Then
@@ -689,15 +736,42 @@ apin.Name = name 'in single quotes
 apin.Electrical = pintype
 apin.ShowName = pinnames
 apin.OwnerPartId = SchComponent.CurrentPartID
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 306] OwnerPartId failed: " & Err.Description
+        MsgBox "ERROR at OwnerPartId: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[306] OwnerPartId set"
 apin.OwnerPartDisplayMode = SchComponent.DisplayMode
 SchComponent.AddSchObject(apin)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 307] AddSchObject failed: " & Err.Description
+        MsgBox "ERROR at AddSchObject: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[307] Pin ADDED to component"
+    On Error GoTo 0
 
 End Sub
 
 Sub CreateBottomPin(x, y, designator, name, length, pintype, pinnames)
+    DebugLog "[300] CreateBottomPin START: " & designator
+    On Error Resume Next
 Dim apin
 
+If SchComponent Is Nothing Then
+    DebugLog "[ERROR 300] SchComponent is Nothing in CreateBottomPin. x=" & x & " y=" & y & " designator=" & designator & " name=" & name
+    MsgBox "ERROR: SchComponent is Nothing in CreateBottomPin", vbCritical
+    Exit Sub
+End If
+
 Set apin = SchServer.SchObjectFactory(ePin, eCreate_Default)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 301] SchObjectFactory failed: " & Err.Description
+        MsgBox "ERROR at SchObjectFactory: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[301] Pin object created"
 apin.PinLength = MilsToCoord(length)
 apin.Location = Point(MilsToCoord(x), MilsToCoord(y))
     If Err.Number <> 0 Then
@@ -713,8 +787,21 @@ apin.Name = name 'in single quotes
 apin.Electrical = pintype
 apin.ShowName = pinnames
 apin.OwnerPartId = SchComponent.CurrentPartID
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 306] OwnerPartId failed: " & Err.Description
+        MsgBox "ERROR at OwnerPartId: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[306] OwnerPartId set"
 apin.OwnerPartDisplayMode = SchComponent.DisplayMode
 SchComponent.AddSchObject(apin)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 307] AddSchObject failed: " & Err.Description
+        MsgBox "ERROR at AddSchObject: " & Err.Description, vbCritical
+        Exit Sub
+    End If
+    DebugLog "[307] Pin ADDED to component"
+    On Error GoTo 0
 
 End Sub
 
@@ -980,6 +1067,7 @@ Sub ProcessCB(filename)
            DebugLog "[LOOP] Iteration " & loopCounter
        End If
        lineArray = Split(f.ReadLine, ", ")
+       DebugLog "[CMD] #" & loopCounter & " cmd=" & lineArray(0) & " AddPCB=" & AddPCB & " AddSCH=" & AddSCH
        If lineArray(0) = "CreateFootprintInLib" Then
           AddPCB = AddPcbLib(lineArray(1))
           If Not AddPCB Then
@@ -1109,8 +1197,21 @@ Sub ProcessCB(filename)
     'Set SCHLib = SchServer.GetCurrentSchDocument
     If AddSCH Then
        EnsureSchComponentAdded
-       SchLibDoc.DoFileSave("SchLib")
-       DebugLog "[403] SchLib SAVED!"
+       If SchLibDoc Is Nothing Then
+          DebugLog "[ERROR] SchLibDoc is Nothing at save time"
+       Else
+          SchLibDoc.DoFileSave("SchLib")
+          DebugLog "[403] SchLib SAVED!"
+       End If
+    End If
+
+    If AddPCB Then
+       If PcbLibDoc Is Nothing Then
+          DebugLog "[ERROR] PcbLibDoc is Nothing at save time"
+       Else
+          PcbLibDoc.DoFileSave("PcbLib")
+          DebugLog "[204] PcbLib SAVED (final)"
+       End If
     End If
 
 
@@ -2801,4 +2902,3 @@ outputStr = objRegExp.Replace(strtoclean,"_")
 
 strClean = outputStr
 End Function
-
