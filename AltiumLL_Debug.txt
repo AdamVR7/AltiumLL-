@@ -1,41 +1,41 @@
-03.02.2026 11:59:39: [START] Processing CB file...
-03.02.2026 11:59:39: [CMD] #1 cmd=SRP1038A-330M AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:39: [CMD] #2 cmd=CreateFootprintInLib AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:39: [CMD] #3 cmd=CreateRectangularSMD AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:40: [CMD] #4 cmd=CreateRectangularSMD AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:40: [CMD] #5 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:40: [CMD] #6 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:40: [CMD] #7 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:40: [CMD] #8 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:40: [CMD] #9 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:41: [LOOP] Iteration 10
-03.02.2026 11:59:41: [CMD] #10 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:41: [CMD] #11 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:41: [CMD] #12 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:41: [CMD] #13 cmd=CreateSilkscreenLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:41: [CMD] #14 cmd=CreateSilkscreenLine AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:41: [CMD] #15 cmd=AssignSTEPmodel AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:42: [99] Calling AssignSTEPmodel
-03.02.2026 11:59:42: [100] AssignSTEPmodel START
-03.02.2026 11:59:42: [105] 3D model ADDED
-03.02.2026 11:59:42: [CMD] #16 cmd=CreateComponentInLib AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:42: [200] CreateComponentInLib command
-03.02.2026 11:59:42: [201] PcbLib SAVED
-03.02.2026 11:59:42: [202] Opening SchLib: C:\Users\юзер\Documents\AltiumLL\SamacSys.SchLib
-03.02.2026 11:59:43: [207] SchComponent created
-03.02.2026 11:59:43: [207] SchComponent created
-03.02.2026 11:59:43: [208] Component parameters set
-03.02.2026 11:59:43: [400] Component added to library
-03.02.2026 11:59:43: [CMD] #17 cmd=CreateLeftPin AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:43: [300] CreateLeftPin START: 1
-03.02.2026 11:59:43: [301] Pin object created
-03.02.2026 11:59:43: [302] Location set
-03.02.2026 11:59:43: [306] OwnerPartId set
-03.02.2026 11:59:43: [307] Pin ADDED to component
-03.02.2026 11:59:43: [CMD] #18 cmd=CreateRightPin AddPCB=Истина AddSCH=Истина
-03.02.2026 11:59:43: [300] CreateRightPin START: 2
-03.02.2026 11:59:43: [301] Pin object created
-03.02.2026 11:59:43: [302] Location set
-03.02.2026 11:59:43: [306] OwnerPartId set
-03.02.2026 11:59:43: [307] Pin ADDED to component
-03.02.2026 11:59:43: [CMD] #19 cmd=DrawArc2 AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:26: [START] Processing CB file...
+03.02.2026 12:13:26: [CMD] #1 cmd=SRP1038A-330M AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:26: [CMD] #2 cmd=CreateFootprintInLib AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:26: [CMD] #3 cmd=CreateRectangularSMD AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:26: [CMD] #4 cmd=CreateRectangularSMD AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:27: [CMD] #5 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:27: [CMD] #6 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:27: [CMD] #7 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:27: [CMD] #8 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:27: [CMD] #9 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:27: [LOOP] Iteration 10
+03.02.2026 12:13:28: [CMD] #10 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:28: [CMD] #11 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:28: [CMD] #12 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:28: [CMD] #13 cmd=CreateSilkscreenLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:28: [CMD] #14 cmd=CreateSilkscreenLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:28: [CMD] #15 cmd=AssignSTEPmodel AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:28: [99] Calling AssignSTEPmodel
+03.02.2026 12:13:28: [100] AssignSTEPmodel START
+03.02.2026 12:13:29: [105] 3D model ADDED
+03.02.2026 12:13:29: [CMD] #16 cmd=CreateComponentInLib AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:29: [200] CreateComponentInLib command
+03.02.2026 12:13:29: [201] PcbLib SAVED
+03.02.2026 12:13:29: [202] Opening SchLib: C:\Users\юзер\Documents\AltiumLL\SamacSys.SchLib
+03.02.2026 12:13:29: [207] SchComponent created
+03.02.2026 12:13:29: [207] SchComponent created
+03.02.2026 12:13:29: [208] Component parameters set
+03.02.2026 12:13:29: [400] Component added to library
+03.02.2026 12:13:30: [CMD] #17 cmd=CreateLeftPin AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:30: [300] CreateLeftPin START: 1
+03.02.2026 12:13:30: [301] Pin object created
+03.02.2026 12:13:30: [302] Location set
+03.02.2026 12:13:30: [306] OwnerPartId set
+03.02.2026 12:13:30: [307] Pin ADDED to component
+03.02.2026 12:13:30: [CMD] #18 cmd=CreateRightPin AddPCB=Истина AddSCH=Истина
+03.02.2026 12:13:30: [300] CreateRightPin START: 2
+03.02.2026 12:13:30: [301] Pin object created
+03.02.2026 12:13:30: [302] Location set
+03.02.2026 12:13:30: [306] OwnerPartId set
+03.02.2026 12:13:30: [307] Pin ADDED to component
+03.02.2026 12:13:30: [CMD] #19 cmd=DrawArc2 AddPCB=Истина AddSCH=Истина
