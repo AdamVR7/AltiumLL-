@@ -1,18 +1,18 @@
-02.02.2026 16:52:20: [START] Processing CB file...
-02.02.2026 16:52:21: [LOOP] Iteration 10
-02.02.2026 16:52:22: [99] Calling AssignSTEPmodel
-02.02.2026 16:52:22: [100] AssignSTEPmodel START
-02.02.2026 16:52:22: [105] 3D model ADDED
-02.02.2026 16:52:22: [200] CreateComponentInLib command
-02.02.2026 16:52:23: [201] PcbLib SAVED
-02.02.2026 16:52:23: [202] Opening SchLib: C:\Users\юзер\Documents\AltiumLL\SamacSys.SchLib
-02.02.2026 16:52:23: [207] SchComponent created
-02.02.2026 16:52:23: [207] SchComponent created
-02.02.2026 16:52:23: [208] Component parameters set
-02.02.2026 16:52:24: [400] Component added to library
-02.02.2026 16:52:24: [300] CreateLeftPin START: 1
-02.02.2026 16:52:24: [301] Pin object created
-02.02.2026 16:52:24: [302] Location set
-02.02.2026 16:52:24: [306] OwnerPartId set
-02.02.2026 16:52:24: [307] Pin ADDED to component
-02.02.2026 16:52:24: [302] Location set
+03.02.2026 11:35:15: [START] Processing CB file...
+03.02.2026 11:35:16: [LOOP] Iteration 10
+03.02.2026 11:35:16: [99] Calling AssignSTEPmodel
+03.02.2026 11:35:17: [100] AssignSTEPmodel START
+03.02.2026 11:35:17: [105] 3D model ADDED
+03.02.2026 11:35:17: [200] CreateComponentInLib command
+03.02.2026 11:35:17: [201] PcbLib SAVED
+03.02.2026 11:35:17: [202] Opening SchLib: C:\Users\юзер\Documents\AltiumLL\SamacSys.SchLib
+03.02.2026 11:35:18: [207] SchComponent created
+03.02.2026 11:35:18: [207] SchComponent created
+03.02.2026 11:35:18: [208] Component parameters set
+03.02.2026 11:35:18: [400] Component added to library
+03.02.2026 11:35:18: [300] CreateLeftPin START: 1
+03.02.2026 11:35:18: [301] Pin object created
+03.02.2026 11:35:18: [302] Location set
+03.02.2026 11:35:18: [306] OwnerPartId set
+03.02.2026 11:35:18: [307] Pin ADDED to component
+03.02.2026 11:35:18: [302] Location set
