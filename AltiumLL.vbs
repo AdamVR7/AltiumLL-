@@ -573,9 +573,13 @@ End Sub
 Sub CreatePin(x, y, designator, name, orientation, length, pintype, pinnames)
 Dim apin
 
+On Error Resume Next
+DebugLog "[310] CreatePin START: " & designator & " name=" & name & " x=" & x & " y=" & y & " len=" & length & " type=" & pintype & " show=" & pinnames
+If SchComponent Is Nothing Then DebugLog "[311] CreatePin SchComponent is Nothing"
 Set apin = SchServer.SchObjectFactory(ePin, eCreate_Default)
 apin.PinLength = MilsToCoord(length)
 apin.Location = Point(MilsToCoord(x), MilsToCoord(y))
+DebugLog "[312] CreatePin Location Err=" & Err.Number & " " & Err.Description
     If Err.Number <> 0 Then
         DebugLog "[ERROR 302] Location failed: " & Err.Description
         MsgBox "ERROR at Location: " & Err.Description, vbCritical
@@ -590,13 +594,16 @@ apin.Electrical = pintype
 apin.ShowName = pinnames
 apin.OwnerPartId = SchComponent.CurrentPartID
 apin.OwnerPartDisplayMode = SchComponent.DisplayMode
+If Not (SchComponent Is Nothing) Then DebugLog "[313] CreatePin OwnerPartId=" & SchComponent.CurrentPartID & " DisplayMode=" & SchComponent.DisplayMode
 SchComponent.AddSchObject(apin)
+DebugLog "[314] CreatePin AddSchObject Err=" & Err.Number & " " & Err.Description
     If Err.Number <> 0 Then
         DebugLog "[ERROR 307] AddSchObject failed: " & Err.Description
         MsgBox "ERROR at AddSchObject: " & Err.Description, vbCritical
         Exit Sub
     End If
     DebugLog "[307] Pin ADDED to component"
+DebugLog "[315] CreatePin DONE"
     On Error GoTo 0
 
 End Sub
