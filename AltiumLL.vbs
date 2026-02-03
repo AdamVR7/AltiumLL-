@@ -455,11 +455,13 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
     Dim footprint
 
     Set PCBLib = PCBServer.GetCurrentPCBLibrary
+    DebugLog "[101] STEP path=" & STEPFileName & " Rot=" & RotX & "/" & RotY & "/" & RotZ & " XYZ=" & X & "/" & Y & "/" & Z
     If PCBLib Is Nothing Then
         DebugLog "[ERROR] PCBLib is Nothing in AssignSTEPmodel"
         Exit Sub
     End If
     Set footprint = PCBLib.CurrentComponent
+    If Not (footprint Is Nothing) Then DebugLog "[102] STEP footprint=" & footprint.Name
     If footprint Is Nothing Then
         DebugLog "[ERROR] CurrentComponent is Nothing in AssignSTEPmodel"
         Exit Sub
@@ -474,10 +476,12 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
         PCBServer.PostProcess
         Exit Sub
     End If
+    DebugLog "[103] STEP model loaded OK"
 
     X = replace(X,".",decChar)
     Y = replace(Y,".",decChar)
     Z = replace(Z,".",decChar)
+    DebugLog "[104] STEP XYZ parsed=" & X & "/" & Y & "/" & Z & " decChar=" & decChar
 
     ' Apply transforms
     Model.SetState RotX,RotY,RotZ,mmstocoord(z)
@@ -487,6 +491,7 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
     footprint.AddPCBObject(STEPmodel)
     PCBServer.SendMessageToRobots footprint.I_ObjectAddress,c_Broadcast,PCBM_BoardRegisteration,STEPmodel.I_ObjectAddress
     DebugLog "[105] 3D model ADDED"
+    DebugLog "[106] STEPmodel.Model is Nothing=" & (STEPmodel.Model Is Nothing)
 
     ' Move model
     STEPmodel.MoveByXY mmstocoord(x), mmstocoord(y)
@@ -536,7 +541,10 @@ Sub EnsureSchComponentAdded()
     If SchComponentAdded Then Exit Sub
     If SCHLib Is Nothing Then Exit Sub
     If SchComponent Is Nothing Then Exit Sub
+    DebugLog "[399] CurrentSchComponent before add: " & SCHLib.CurrentSchComponent.LibReference
     SCHLib.AddSchComponent(SchComponent)
+    SCHLib.CurrentSchComponent = SchComponent
+    DebugLog "[401] CurrentSchComponent set: " & SCHLib.CurrentSchComponent.LibReference
     DebugLog "[400] Component added to library"
     SchServer.RobotManager.SendMessage nil, c_BroadCast, SCHM_PrimitiveRegistration, SchComponent.I_ObjectAddress
     SCHLib.GraphicallyInvalidate
@@ -1121,10 +1129,13 @@ Sub ProcessCB(filename)
           SchLib = txt_SchLib.Text
           SchLibDoc = Client.OpenDocument("SchLib",SchLib)
           DebugLog "[202] Opening SchLib: " & SchLib
+          DebugLog "[203] SchLibDoc is Nothing=" & (SchLibDoc Is Nothing)
           Client.ShowDocument(SchLibDoc)
           prtName = lineArray(1)
           AddSCH = AddSchLib(prtName)
           Set SCHLib = SchServer.GetCurrentSchDocument
+          DebugLog "[204] SCHLib is Nothing=" & (SCHLib Is Nothing)
+          If Not (SCHLib Is Nothing) Then DebugLog "[205] CurrentSchComponent=" & SCHLib.CurrentSchComponent.LibReference
           Set SchComponent = SchServer.SchObjectFactory(eSchComponent, eCreate_Default)
           If SchComponent Is Nothing Then
              DebugLog "[ERROR] SchComponent is Nothing!"
