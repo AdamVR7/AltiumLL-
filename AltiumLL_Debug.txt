@@ -1,18 +1,51 @@
-02.02.2026 16:52:20: [START] Processing CB file...
-02.02.2026 16:52:21: [LOOP] Iteration 10
-02.02.2026 16:52:22: [99] Calling AssignSTEPmodel
-02.02.2026 16:52:22: [100] AssignSTEPmodel START
-02.02.2026 16:52:22: [105] 3D model ADDED
-02.02.2026 16:52:22: [200] CreateComponentInLib command
-02.02.2026 16:52:23: [201] PcbLib SAVED
-02.02.2026 16:52:23: [202] Opening SchLib: C:\Users\юзер\Documents\AltiumLL\SamacSys.SchLib
-02.02.2026 16:52:23: [207] SchComponent created
-02.02.2026 16:52:23: [207] SchComponent created
-02.02.2026 16:52:23: [208] Component parameters set
-02.02.2026 16:52:24: [400] Component added to library
-02.02.2026 16:52:24: [300] CreateLeftPin START: 1
-02.02.2026 16:52:24: [301] Pin object created
-02.02.2026 16:52:24: [302] Location set
-02.02.2026 16:52:24: [306] OwnerPartId set
-02.02.2026 16:52:24: [307] Pin ADDED to component
-02.02.2026 16:52:24: [302] Location set
+03.02.2026 12:23:36: [START] Processing CB file...
+03.02.2026 12:23:36: [CMD] #1 cmd=SRP1038A-330M AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:37: [CMD] #2 cmd=CreateFootprintInLib AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:37: [CMD] #3 cmd=CreateRectangularSMD AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:37: [CMD] #4 cmd=CreateRectangularSMD AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:37: [CMD] #5 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:37: [CMD] #6 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:37: [CMD] #7 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:38: [CMD] #8 cmd=CreateCourtyardLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:38: [CMD] #9 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:38: [LOOP] Iteration 10
+03.02.2026 12:23:38: [CMD] #10 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:38: [CMD] #11 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:38: [CMD] #12 cmd=CreateAssemblyLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:38: [CMD] #13 cmd=CreateSilkscreenLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:39: [CMD] #14 cmd=CreateSilkscreenLine AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:39: [CMD] #15 cmd=AssignSTEPmodel AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:39: [99] Calling AssignSTEPmodel
+03.02.2026 12:23:39: [100] AssignSTEPmodel START
+03.02.2026 12:23:39: [101] STEP path=C:\Users\юзер\Documents\AltiumLL\Temp\SRP1038A-330M.stp Rot=0/0/0 XYZ=0/0/0
+03.02.2026 12:23:39: [102] STEP footprint=INDPM110100X400N
+03.02.2026 12:23:39: [103] STEP model loaded OK
+03.02.2026 12:23:39: [104] STEP XYZ parsed=0/0/0 decChar=,
+03.02.2026 12:23:39: [105] 3D model ADDED
+03.02.2026 12:23:39: [106] STEPmodel.Model is Nothing=Ложь
+03.02.2026 12:23:39: [CMD] #16 cmd=CreateComponentInLib AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:39: [200] CreateComponentInLib command
+03.02.2026 12:23:39: [201] PcbLib SAVED
+03.02.2026 12:23:40: [202] Opening SchLib: C:\Users\юзер\Documents\AltiumLL\SamacSys.SchLib
+03.02.2026 12:23:40: [203] SchLibDoc is Nothing=Ложь
+03.02.2026 12:23:40: [204] SCHLib is Nothing=Ложь
+03.02.2026 12:23:40: [205] CurrentSchComponent=1546216-3
+03.02.2026 12:23:40: [207] SchComponent created
+03.02.2026 12:23:40: [207] SchComponent created
+03.02.2026 12:23:40: [208] Component parameters set
+03.02.2026 12:23:40: [399] CurrentSchComponent before add: 1546216-3
+03.02.2026 12:23:40: [401] CurrentSchComponent set: SRP1038A-330M
+03.02.2026 12:23:40: [400] Component added to library
+03.02.2026 12:23:40: [CMD] #17 cmd=CreateLeftPin AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:40: [300] CreateLeftPin START: 1
+03.02.2026 12:23:40: [301] Pin object created
+03.02.2026 12:23:40: [302] Location set
+03.02.2026 12:23:40: [306] OwnerPartId set
+03.02.2026 12:23:40: [307] Pin ADDED to component
+03.02.2026 12:23:40: [CMD] #18 cmd=CreateRightPin AddPCB=Истина AddSCH=Истина
+03.02.2026 12:23:40: [300] CreateRightPin START: 2
+03.02.2026 12:23:40: [301] Pin object created
+03.02.2026 12:23:40: [302] Location set
+03.02.2026 12:23:41: [306] OwnerPartId set
+03.02.2026 12:23:41: [307] Pin ADDED to component
+03.02.2026 12:23:41: [CMD] #19 cmd=DrawArc2 AddPCB=Истина AddSCH=Истина

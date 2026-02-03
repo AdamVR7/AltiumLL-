@@ -458,13 +458,12 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
     Set fso = CreateObject("Scripting.FileSystemObject")
     Set PCBLib = PCBServer.GetCurrentPCBLibrary
     DebugLog "[101] STEP path=" & STEPFileName & " Rot=" & RotX & "/" & RotY & "/" & RotZ & " XYZ=" & X & "/" & Y & "/" & Z
-    DebugLog "[316] STEP file exists=" & fso.FileExists(STEPFileName)
     If PCBLib Is Nothing Then
         DebugLog "[ERROR] PCBLib is Nothing in AssignSTEPmodel"
         Exit Sub
     End If
     Set footprint = PCBLib.CurrentComponent
-    If Not (footprint Is Nothing) Then DebugLog "[317] STEP footprint=" & footprint.Name
+    If Not (footprint Is Nothing) Then DebugLog "[102] STEP footprint=" & footprint.Name
     If footprint Is Nothing Then
         DebugLog "[ERROR] CurrentComponent is Nothing in AssignSTEPmodel"
         Exit Sub
@@ -480,16 +479,12 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
         PCBServer.PostProcess
         Exit Sub
     End If
-    DebugLog "[318] STEP model loaded OK"
+    DebugLog "[103] STEP model loaded OK"
 
     X = replace(X,".",decChar)
     Y = replace(Y,".",decChar)
     Z = replace(Z,".",decChar)
-    RotX = replace(RotX,".",decChar)
-    RotY = replace(RotY,".",decChar)
-    RotZ = replace(RotZ,".",decChar)
-    DebugLog "[319] STEP Rot parsed=" & RotX & "/" & RotY & "/" & RotZ & " decChar=" & decChar
-    DebugLog "[320] STEP XYZ parsed=" & X & "/" & Y & "/" & Z & " decChar=" & decChar
+    DebugLog "[104] STEP XYZ parsed=" & X & "/" & Y & "/" & Z & " decChar=" & decChar
 
     ' Apply transforms
     Model.SetState RotX,RotY,RotZ,mmstocoord(z)
@@ -500,7 +495,7 @@ Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
     footprint.AddPCBObject(STEPmodel)
     PCBServer.SendMessageToRobots footprint.I_ObjectAddress,c_Broadcast,PCBM_BoardRegisteration,STEPmodel.I_ObjectAddress
     DebugLog "[105] 3D model ADDED"
-    DebugLog "[321] STEPmodel.Model is Nothing=" & (STEPmodel.Model Is Nothing)
+    DebugLog "[106] STEPmodel.Model is Nothing=" & (STEPmodel.Model Is Nothing)
 
     ' Move model
     STEPmodel.MoveByXY mmstocoord(x), mmstocoord(y)
@@ -556,7 +551,7 @@ Sub EnsureSchComponentAdded()
     DebugLog "[399] CurrentSchComponent before add: " & SCHLib.CurrentSchComponent.LibReference
     SCHLib.AddSchComponent(SchComponent)
     SCHLib.CurrentSchComponent = SchComponent
-    DebugLog "[323] CurrentSchComponent set: " & SCHLib.CurrentSchComponent.LibReference
+    DebugLog "[401] CurrentSchComponent set: " & SCHLib.CurrentSchComponent.LibReference
     DebugLog "[400] Component added to library"
     SchServer.RobotManager.SendMessage nil, c_BroadCast, SCHM_PrimitiveRegistration, SchComponent.I_ObjectAddress
     SCHLib.GraphicallyInvalidate
@@ -632,8 +627,6 @@ Sub CreateLeftPin(x, y, designator, name, length, pintype, pinnames)
     DebugLog "[300] CreateLeftPin START: " & designator
     On Error Resume Next
 Dim apin
-
-If Not (SCHLib Is Nothing) Then DebugLog "[324] SCHLib.CurrentSchComponent=" & SCHLib.CurrentSchComponent.LibReference & " OwnerPartId=" & SchComponent.CurrentPartID & " DisplayMode=" & SchComponent.DisplayMode
 
 If SchComponent Is Nothing Then
     DebugLog "[ERROR 300] SchComponent is Nothing in CreateLeftPin. x=" & x & " y=" & y & " designator=" & designator & " name=" & name
