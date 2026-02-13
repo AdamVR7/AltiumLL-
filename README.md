@@ -11,7 +11,7 @@ This is a **fixed and fully working version** of the Altium Library Loader scrip
 This version resolves critical issues found in the original script:
 
 ### 1. **Arc Angles Issue (Locale-Dependent)**
-- **Problem:** Arc angles were parsed incorrectly on non-English Windows (Russian, German, etc.) causing Empty values
+- **Problem:** Arc angles were parsed incorrectly on non-English Windows (German, Russian, etc.) causing Empty values
 - **Solution:** Implemented locale-aware decimal separator conversion (dot to comma) for Russian Windows
 - **Result:** Arcs now render correctly with proper angles (e.g., 2.3° - 177.7°)
 
@@ -39,7 +39,7 @@ This version resolves critical issues found in the original script:
 - Altium Designer 22.x or newer (tested on 22.8.2 Build 66)
 - SamacSys Component Search Engine account
 - Internet connection
-- Windows OS (tested on Russian Windows 10/11)
+- Windows OS (tested on Windows 10/11)
 
 ## 🔧 Installation
 
@@ -71,19 +71,10 @@ If 3D models download but don't appear in footprints:
 - **Workaround:** Use the included `Add3DModels.vbs` batch script to add 3D models post-creation
 - This separate script is more stable and can process entire libraries at once
 
-## 🌍 Locale Support
-
-This version is specifically tested and fixed for **Russian Windows**:
-- Decimal separator handling (comma instead of dot)
-- Cyrillic paths support
-- Proper character encoding
-
-Should also work on other non-English Windows versions with similar locale settings.
-
 ## 📊 Testing Details
 
 **Test Environment:**
-- OS: Windows 10/11 (Russian locale)
+- OS: Windows 10/11
 - Altium: Designer 22.8.2 Build 66
 - Test Component: SRP1038A-330M (inductor with 4 semicircular arcs)
 
@@ -141,7 +132,6 @@ Same as original Altium Library Loader.
 
 - Original script: SamacSys / Altium
 - Fixes and improvements: Community contribution
-- Testing: Russian Altium Designer community
 
 ## 📞 Support
 
@@ -159,7 +149,7 @@ If you encounter issues:
 - ✅ Fixed CB file parsing (comma-separated values with spaces)
 - ✅ Added comprehensive error handling and logging
 - ✅ Tested on Altium Designer 22.8.2 Build 66
-- ✅ Verified on Russian Windows 10/11
+- ✅ Verified on Windows 10/11
 
 ---
 
