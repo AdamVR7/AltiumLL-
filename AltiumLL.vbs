@@ -447,62 +447,91 @@ Sub DebugLog(msg)
 End Sub
 
 Sub AssignSTEPmodel(STEPFileName, RotX, RotY, RotZ, X, Y, Z)
-    DebugLog "[100] AssignSTEPmodel START"
 
     Dim STEPmodel
     Dim Model
+    Dim temp_fp
     Dim PCBLib
     Dim footprint
-    Dim fso
 
-    Set fso = CreateObject("Scripting.FileSystemObject")
+    DebugLog "[100] AssignSTEPmodel START - ORIGINAL METHOD"
+    DebugLog "[101] STEP=" & STEPFileName & " Rot=" & RotX & "/" & RotY & "/" & RotZ & " XYZ=" & X & "/" & Y & "/" & Z
+
     Set PCBLib = PCBServer.GetCurrentPCBLibrary
-    DebugLog "[101] STEP path=" & STEPFileName & " Rot=" & RotX & "/" & RotY & "/" & RotZ & " XYZ=" & X & "/" & Y & "/" & Z
     If PCBLib Is Nothing Then
-        DebugLog "[ERROR] PCBLib is Nothing in AssignSTEPmodel"
+        DebugLog "[ERROR 101] PCBLib is Nothing!"
         Exit Sub
     End If
+    
     Set footprint = PCBLib.CurrentComponent
-    If Not (footprint Is Nothing) Then DebugLog "[102] STEP footprint=" & footprint.Name
     If footprint Is Nothing Then
-        DebugLog "[ERROR] CurrentComponent is Nothing in AssignSTEPmodel"
+        DebugLog "[ERROR 102] CurrentComponent is Nothing!"
         Exit Sub
     End If
+    
+    DebugLog "[102] Current footprint=" & footprint.Name
 
-    ' Create STEP model and register it
-    PCBServer.PreProcess
-    Set STEPmodel = PCBServer.PCBObjectFactory(eComponentBodyObject,eNoDimension,eCreate_Default)
-    DebugLog "[325] STEPmodel is Nothing=" & (STEPmodel Is Nothing)
-    Set Model = STEPmodel.ModelFactory_FromFilename(STEPFileName, false)
-    If Model Is Nothing Then
-        DebugLog "[ERROR] STEP model load failed: " & STEPFileName
-        PCBServer.PostProcess
+    On Error Resume Next
+    temp_fp = PCBLib.CreateNewComponent
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 103] Failed to create temp footprint: " & Err.Description
         Exit Sub
     End If
-    DebugLog "[103] STEP model loaded OK"
+    DebugLog "[103] Temp footprint created"
+    
+    PCBLib.CurrentComponent = temp_fp
+    DebugLog "[104] Switched to temp footprint"
 
+    STEPmodel = PCBServer.PCBObjectFactory(eComponentBodyObject,eNoDimension,eCreate_Default)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 105] Failed to create STEPmodel: " & Err.Description
+        PCBLib.RemoveComponent(temp_fp)
+        Exit Sub
+    End If
+    DebugLog "[105] STEPmodel object created"
+    
+    Model = STEPmodel.ModelFactory_FromFilename(STEPFileName, false)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 106] ModelFactory_FromFilename failed: " & Err.Description
+        PCBLib.RemoveComponent(temp_fp)
+        Exit Sub
+    End If
+    DebugLog "[106] Model loaded from file"
+    
     X = replace(X,".",decChar)
     Y = replace(Y,".",decChar)
     Z = replace(Z,".",decChar)
-    DebugLog "[104] STEP XYZ parsed=" & X & "/" & Y & "/" & Z & " decChar=" & decChar
-
-    ' Apply transforms
+    DebugLog "[107] XYZ converted: " & X & "/" & Y & "/" & Z
+    
     Model.SetState RotX,RotY,RotZ,mmstocoord(z)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 108] SetState failed: " & Err.Description
+        PCBLib.RemoveComponent(temp_fp)
+        Exit Sub
+    End If
+    DebugLog "[108] Model.SetState completed"
+    
     STEPmodel.Model = Model
-
-    ' Add model to footprint
-    DebugLog "[326] Attach to footprint=" & footprint.Name
+    DebugLog "[109] Model assigned to STEPmodel"
+    
     footprint.AddPCBObject(STEPmodel)
-    PCBServer.SendMessageToRobots footprint.I_ObjectAddress,c_Broadcast,PCBM_BoardRegisteration,STEPmodel.I_ObjectAddress
-    DebugLog "[105] 3D model ADDED"
-    DebugLog "[106] STEPmodel.Model is Nothing=" & (STEPmodel.Model Is Nothing)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 110] AddPCBObject failed: " & Err.Description
+        PCBLib.RemoveComponent(temp_fp)
+        Exit Sub
+    End If
+    DebugLog "[110] Model added to footprint"
 
-    ' Move model
     STEPmodel.MoveByXY mmstocoord(x), mmstocoord(y)
+    DebugLog "[111] Model moved to position"
+    
+    PCBLib.RemoveComponent(temp_fp)
+    DebugLog "[112] Temp footprint removed"
 
-    footprint.GraphicallyInvalidate
     PCBServer.PostProcess
-
+    DebugLog "[113] PostProcess completed - 3D model should be attached!"
+    
+    On Error GoTo 0
 End Sub
 
 Sub CreateComponentInLib(Name,Description,RefDes)
@@ -836,11 +865,16 @@ Dim aline
 
     'Define the line parameters.
     aline.LineWidth = eSmall
-    aline.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
-    aline.Corner = Point(MilsToCoord(x2), MilsToCoord(y2))
+    ' FIX: Replace comma with dot
+    x1 = Replace(CStr(x1), ",", ".")
+    y1 = Replace(CStr(y1), ",", ".")
+    x2 = Replace(CStr(x2), ",", ".")
+    y2 = Replace(CStr(y2), ",", ".")
+    aline.Location = Point(MilsToCoord(CSng(x1)), MilsToCoord(CSng(y1)))
+    aline.Corner = Point(MilsToCoord(CSng(x2)), MilsToCoord(CSng(y2)))
     aline.Color = 0 'Black
-    aline.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aline.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aline.OwnerPartId = SchComponent.CurrentPartID
+    aline.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aline)
 End Sub
 
@@ -855,11 +889,15 @@ Dim acircle
     acircle.LineWidth = eSmall
     acircle.StartAngle = 0
     acircle.EndAngle =360
-    acircle.Location = Point(MilsToCoord(x), MilsToCoord(y))
-    acircle.Radius = MilsToCoord(rad)
+    ' FIX: Replace comma with dot
+    x = Replace(CStr(x), ",", ".")
+    y = Replace(CStr(y), ",", ".")
+    rad = Replace(CStr(rad), ",", ".")
+    acircle.Location = Point(MilsToCoord(CSng(x)), MilsToCoord(CSng(y)))
+    acircle.Radius = MilsToCoord(CSng(rad))
     acircle.Color = 0 'Black
-    acircle.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    acircle.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    acircle.OwnerPartId = SchComponent.CurrentPartID
+    acircle.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(acircle)
 End Sub
 
@@ -872,13 +910,20 @@ Dim aarc
 
     'Define the arc parameters.
     aarc.LineWidth = eSmall
-    aarc.StartAngle = startAngle
-    aarc.EndAngle = endAngle
-    aarc.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
-    aarc.Radius = MilsToCoord(rad)
+    ' FIX: Replace comma with dot
+    x1 = Replace(CStr(x1), ",", ".")
+    y1 = Replace(CStr(y1), ",", ".")
+    startAngle = Replace(CStr(startAngle), ",", ".")
+    endAngle = Replace(CStr(endAngle), ",", ".")
+    rad = Replace(CStr(rad), ",", ".")
+    
+    aarc.StartAngle = CSng(startAngle)
+    aarc.EndAngle = CSng(endAngle)
+    aarc.Location = Point(MilsToCoord(CSng(x1)), MilsToCoord(CSng(y1)))
+    aarc.Radius = MilsToCoord(CSng(rad))
     aarc.Color = 0 'Black
-    aarc.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aarc.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aarc.OwnerPartId = SchComponent.CurrentPartID
+    aarc.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aarc)
 End Sub
 
@@ -896,13 +941,18 @@ Dim arectangle
 
     'Define the line parameters.
     arectangle.LineWidth = eSmall
-    arectangle.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
-    arectangle.Corner = Point(MilsToCoord(x2), MilsToCoord(y2))
+    ' FIX: Replace comma with dot
+    x1 = Replace(CStr(x1), ",", ".")
+    y1 = Replace(CStr(y1), ",", ".")
+    x2 = Replace(CStr(x2), ",", ".")
+    y2 = Replace(CStr(y2), ",", ".")
+    arectangle.Location = Point(MilsToCoord(CSng(x1)), MilsToCoord(CSng(y1)))
+    arectangle.Corner = Point(MilsToCoord(CSng(x2)), MilsToCoord(CSng(y2)))
     arectangle.Color = RGB(128,0,0)
     arectangle.AreaColor = RGB(255,255,176)
     arectangle.IsSolid = true
-    arectangle.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    arectangle.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    arectangle.OwnerPartId = SchComponent.CurrentPartID
+    arectangle.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(arectangle)
 End Sub
 
@@ -915,11 +965,16 @@ Dim aline
 
     'Define the line parameters.
     aline.LineWidth = eSmall
-    aline.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
-    aline.Corner = Point(MilsToCoord(x2), MilsToCoord(y2))
+    ' FIX: Replace comma with dot
+    x1 = Replace(CStr(x1), ",", ".")
+    y1 = Replace(CStr(y1), ",", ".")
+    x2 = Replace(CStr(x2), ",", ".")
+    y2 = Replace(CStr(y2), ",", ".")
+    aline.Location = Point(MilsToCoord(CSng(x1)), MilsToCoord(CSng(y1)))
+    aline.Corner = Point(MilsToCoord(CSng(x2)), MilsToCoord(CSng(y2)))
     aline.Color = RGB(0,0,255) 'Blue
-    aline.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aline.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aline.OwnerPartId = SchComponent.CurrentPartID
+    aline.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(aline)
 End Sub
 
@@ -934,31 +989,106 @@ Dim acircle
     acircle.LineWidth = eSmall
     acircle.StartAngle = 0
     acircle.EndAngle =360
-    acircle.Location = Point(MilsToCoord(x), MilsToCoord(y))
-    acircle.Radius = MilsToCoord(rad)
+    ' FIX: Replace comma with dot
+    x = Replace(CStr(x), ",", ".")
+    y = Replace(CStr(y), ",", ".")
+    rad = Replace(CStr(rad), ",", ".")
+    acircle.Location = Point(MilsToCoord(CSng(x)), MilsToCoord(CSng(y)))
+    acircle.Radius = MilsToCoord(CSng(rad))
     acircle.Color = RGB(0,0,255) 'Blue
-    acircle.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    acircle.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    acircle.OwnerPartId = SchComponent.CurrentPartID
+    acircle.OwnerPartDisplayMode = SchComponent.DisplayMode
     SchComponent.AddSchObject(acircle)
 End Sub
 
 Sub DrawArc2(x1, y1, startAngle, endAngle, rad, width)
 Dim aarc
+Dim xCoord, yCoord, radiusCoord
+Dim startDbl, endDbl
 
+    DebugLog "[350] DrawArc2 START: x=" & x1 & " y=" & y1 & " start=" & startAngle & " end=" & endAngle & " rad=" & rad
+    DebugLog "[350.1] DrawArc2 TYPES: startAngle type=" & TypeName(startAngle) & " value=[" & startAngle & "]"
+    DebugLog "[350.2] DrawArc2 TYPES: endAngle type=" & TypeName(endAngle) & " value=[" & endAngle & "]"
+    
+    If SchComponent Is Nothing Then
+        DebugLog "[ERROR 350] DrawArc2: SchComponent is Nothing!"
+        Exit Sub
+    End If
+    
     'Create a arc object for the new library component.
     Set aarc = SchServer.SchObjectFactory(eArc,eCreate_Default)
-    If aarc Is Nothing Then Exit Sub
+    If aarc Is Nothing Then 
+        DebugLog "[ERROR 351] DrawArc2: Failed to create arc object"
+        Exit Sub
+    End If
+    DebugLog "[351] DrawArc2: Arc object created"
 
     'Define the arc parameters.
     aarc.LineWidth = eSmall
-    aarc.StartAngle = startAngle
-    aarc.EndAngle = endAngle
-    aarc.Location = Point(MilsToCoord(x1), MilsToCoord(y1))
-    aarc.Radius = MilsToCoord(rad)
+    
+    ' FIX: Russian locale uses comma as decimal separator
+    ' Replace dot with comma before conversion
+    Dim startStr, endStr
+    startStr = Replace(CStr(startAngle), ".", ",")
+    endStr = Replace(CStr(endAngle), ".", ",")
+    
+    DebugLog "[351.2] After dot->comma: start=[" & startStr & "] end=[" & endStr & "]"
+    
+    ' Convert to numbers
+    On Error Resume Next
+    startDbl = startStr * 1.0
+    endDbl = endStr * 1.0
+    
+    ' Check if conversion failed
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 351.25] Multiplication failed: " & Err.Description
+        Err.Clear
+        startDbl = Val(startStr)
+        endDbl = Val(endStr)
+    End If
+    On Error GoTo 0
+    
+    DebugLog "[351.3] DrawArc2 angles: start=" & startDbl & " end=" & endDbl
+    
+    aarc.StartAngle = startDbl
+    aarc.EndAngle = endDbl
+    
+    ' Convert coordinates - also need dot->comma replacement
+    Dim x1Str, y1Str, radStr
+    x1Str = Replace(CStr(x1), ".", ",")
+    y1Str = Replace(CStr(y1), ".", ",")
+    radStr = Replace(CStr(rad), ".", ",")
+    
+    On Error Resume Next
+    xCoord = MilsToCoord(x1Str * 1.0)
+    yCoord = MilsToCoord(y1Str * 1.0)
+    radiusCoord = MilsToCoord(radStr * 1.0)
+    
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 351.6] Coordinate conversion failed: " & Err.Description
+        Err.Clear
+        xCoord = MilsToCoord(Val(x1Str))
+        yCoord = MilsToCoord(Val(y1Str))
+        radiusCoord = MilsToCoord(Val(radStr))
+    End If
+    On Error GoTo 0
+    
+    DebugLog "[351.5] DrawArc2 coords: xCoord=" & xCoord & " yCoord=" & yCoord & " radius=" & radiusCoord
+    
+    aarc.Location = Point(xCoord, yCoord)
+    aarc.Radius = radiusCoord
     aarc.Color = RGB(0,0,255) 'Blue
-    aarc.OwnerPartId = SCHLib.CurrentSchComponent.CurrentPartID
-    aarc.OwnerPartDisplayMode = SCHLib.CurrentSchComponent.DisplayMode
+    aarc.OwnerPartId = SchComponent.CurrentPartID
+    aarc.OwnerPartDisplayMode = SchComponent.DisplayMode
+    
+    On Error Resume Next
     SchComponent.AddSchObject(aarc)
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 353] DrawArc2 AddSchObject failed: " & Err.Description
+    Else
+        DebugLog "[353] DrawArc2 completed: start=" & aarc.StartAngle & " end=" & aarc.EndAngle
+    End If
+    On Error GoTo 0
 End Sub
 
 Sub FinaliseComponentInLib()
@@ -980,16 +1110,47 @@ Sub AssignFootprint(LibraryPath, ModelName, ModelMapping)
 
     Dim Model
     Dim ModelType
+    Dim LibPath
+    
+    On Error Resume Next
+    DebugLog "[360] AssignFootprint START: ModelName=" & ModelName & " Mapping=" & ModelMapping
+    
+    If SchComponent Is Nothing Then
+        DebugLog "[ERROR 360] AssignFootprint: SchComponent is Nothing!"
+        Exit Sub
+    End If
+    
+    ' FIX: Ensure LibraryPath is a string, not an object
+    If IsObject(LibraryPath) Then
+        DebugLog "[ERROR 360.5] LibraryPath is an object, cannot use!"
+        Exit Sub
+    End If
+    LibPath = CStr(LibraryPath)
+    DebugLog "[360.5] AssignFootprint LibPath=" & LibPath
 
     ModelType = "PCBLIB"
     Set Model = SchComponent.AddSchImplementation
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 361] AssignFootprint: AddSchImplementation failed - " & Err.Description
+        Exit Sub
+    End If
+    DebugLog "[361] AssignFootprint: Implementation added"
+    
     Model.ClearAllDatafileLinks
     Model.MapAsString = ModelMapping
     Model.ModelName = ModelName
     Model.ModelType = ModelType
 
-    Model.AddDataFileLink ModelName, LibraryPath, ModelType
+    ' FIX: Correct parameter order: ModelName, LibraryPath, ModelType
+    Model.AddDataFileLink ModelName, LibPath, ModelType
     Model.IsCurrent = True
+    
+    If Err.Number <> 0 Then
+        DebugLog "[ERROR 362] AssignFootprint failed: " & Err.Description
+    Else
+        DebugLog "[362] AssignFootprint completed: " & ModelName & " linked to " & LibPath
+    End If
+    On Error GoTo 0
 End Sub
 
 Sub btn_SchLibClick(Sender)
@@ -1088,7 +1249,17 @@ Sub ProcessCB(filename)
        If loopCounter Mod 10 = 0 Then
            DebugLog "[LOOP] Iteration " & loopCounter
        End If
-       lineArray = Split(f.ReadLine, ", ")
+       
+       ' FIX: Split by comma only, then trim spaces from each element
+       Dim rawLine, i
+       rawLine = f.ReadLine
+       lineArray = Split(rawLine, ",")
+       
+       ' Trim spaces from all elements
+       For i = 0 To UBound(lineArray)
+           lineArray(i) = Trim(lineArray(i))
+       Next
+       
        DebugLog "[CMD] #" & loopCounter & " cmd=" & lineArray(0) & " AddPCB=" & AddPCB & " AddSCH=" & AddSCH
        If lineArray(0) = "CreateFootprintInLib" Then
           AddPCB = AddPcbLib(lineArray(1))
@@ -1127,10 +1298,12 @@ Sub ProcessCB(filename)
        ElseIf lineArray(0) = "AssignSTEPmodel" And AddPCB Then
            DebugLog "[99] Calling AssignSTEPmodel"
            AssignSTEPmodel InstalledDir & "\Temp\" & lineArray(1), lineArray(2), lineArray(3), lineArray(4), lineArray(5), lineArray(6), lineArray(7)
-           fso.DeleteFile(InstalledDir & "\Temp\" & lineArray(1))
+           ' FIX: Не удаляем STEP файл сразу - Altium может использовать его при сохранении библиотеки
+           ' fso.DeleteFile(InstalledDir & "\Temp\" & lineArray(1))
        ElseIf lineArray(0) = "AssignSTEPmodel" And Not AddPCB Then
        ElseIf lineArray(0) = "CreateComponentInLib" Then
           DebugLog "[200] CreateComponentInLib command"
+          ' NOTE: ViewManager методы не работают для PCBLib, поэтому просто сохраняем
           PcbLibDoc.DoFileSave("PcbLib")
           DebugLog "[201] PcbLib SAVED"
           SchLib = txt_SchLib.Text
@@ -1140,6 +1313,7 @@ Sub ProcessCB(filename)
           Client.ShowDocument(SchLibDoc)
           prtName = lineArray(1)
           AddSCH = AddSchLib(prtName)
+          DebugLog "[206] AddSCH flag after AddSchLib=" & AddSCH & " prtName=" & prtName
           Set SCHLib = SchServer.GetCurrentSchDocument
           DebugLog "[204] SCHLib is Nothing=" & (SCHLib Is Nothing)
           If Not (SCHLib Is Nothing) Then DebugLog "[205] CurrentSchComponent=" & SCHLib.CurrentSchComponent.LibReference
@@ -1182,6 +1356,9 @@ Sub ProcessCB(filename)
              SchComponent.ComponentDescription = lineArray(2)
              DebugLog "[208] Component parameters set"
              EnsureSchComponentAdded
+             ' NOTE: НЕ сохраняем здесь! Компонент ещё не имеет пинов и графики.
+             ' Сохранение произойдёт в конце цикла после добавления всех элементов.
+             DebugLog "[209] Component added to library, will be saved at the end"
           End if
        ElseIf lineArray(0) = "CreateLeftPin" And AddSCH Then
           CreateLeftPin lineArray(1), lineArray(2), lineArray(3), lineArray(4), lineArray(5), CInt(lineArray(6)), CInt(lineArray(7))
@@ -1209,6 +1386,11 @@ Sub ProcessCB(filename)
           AddParameter lineArray(1), lineArray(2)
        ElseIf lineArray(0) = "AssignFootprint" And AddSCH Then
           AssignFootprint PcbLib, lineArray(1), lineArray(2)
+          ' FIX: Сохраняем SchLib после привязки футпринта
+          If Not (SchLibDoc Is Nothing) Then
+              SchLibDoc.DoFileSave("SchLib")
+              DebugLog "[363] SchLib saved after AssignFootprint"
+          End If
        End If
     Loop
     DebugLog "[END] Loop completed. Total iterations: " & loopCounter
@@ -1221,6 +1403,7 @@ Sub ProcessCB(filename)
     'FinaliseComponentInLib
     'Set SCHLib = SchServer.GetCurrentSchDocument
     If AddSCH Then
+       DebugLog "[402] AddSCH is True, proceeding with final save..."
        EnsureSchComponentAdded
        If SchLibDoc Is Nothing Then
           DebugLog "[ERROR] SchLibDoc is Nothing at save time"
@@ -1228,6 +1411,8 @@ Sub ProcessCB(filename)
           SchLibDoc.DoFileSave("SchLib")
           DebugLog "[403] SchLib SAVED!"
        End If
+    Else
+       DebugLog "[ERROR 402] AddSCH is False! Component will not be saved to SchLib!"
     End If
 
     If AddPCB Then
@@ -1444,30 +1629,42 @@ Function ProcessSelectedPart(partID)
         prtName = cbArray(0)
 
         If InStr(cb,"AssignSTEPmodel") <> 0 Then
-           Set oReq = CreateObject("msxml2.ServerXMLHTTP.6.0")
+           DebugLog "=========== STEP DOWNLOAD START ==========="
+           DebugLog "partID=" & partID & " prtName=" & prtName
+           
+           Dim stepURL, stepContent
            If epwWSP = vbNullString Then
-               oReq.Open "GET", "https://ad.componentsearchengine.com/ga/model.php?partID=" & partID & "&pi=2&step=1&st=4&lt=4", False
+               stepURL = "https://ad.componentsearchengine.com/ga/model.php?partID=" & partID & "&pi=2&step=1&st=4&lt=4"
            Else
-               oReq.Open "GET", "https://" & epwWSP & ".componentsearchengine.com/ga/model.php?partID=" & partID & "&pi=2&step=1&st=4&lt=4", False
+               stepURL = "https://" & epwWSP & ".componentsearchengine.com/ga/model.php?partID=" & partID & "&pi=2&step=1&st=4&lt=4"
            End If
-           oReq.setTimeouts 10000, 10000, 60000, 60000
-           On Error Resume Next
-           oReq.setRequestHeader "Authorization", "Basic " & Replace(Replace(Base64Encode(username & ":" & password), vbCr, ""), vbLf, "")
-           oReq.setRequestHeader "User-Agent", "AltiumLibraryLoaderV" & AppVersion
-           If chk_Proxy.Checked Then
-              oReq.setProxy 2, Trim(txt_Address.Text) & ":" & Trim(txt_Port.Text), ""
-           End if
-           oReq.send
-           Set bStrm = createobject("Adodb.Stream")
-           with bStrm
-              .Type = 1 '//binary
-              .open
-              .write oReq.responseBody
-              stpFileName = prtName & ".stp"
-              .savetofile ecadModelPath & stpFileName, 2 '//overwrite
-              .Close
-           end With
-           Set oReq = Nothing
+           DebugLog "URL=" & stepURL
+           
+           ' USE WORKING httpGET function!
+           DebugLog "Using httpGET function (same as CB download)..."
+           stepContent = httpGET(stepURL, username, password)
+           
+           If Len(stepContent) > 100 Then
+               ' Save as TEXT file
+               Dim fso, stepFile
+               Set fso = CreateObject("Scripting.FileSystemObject")
+               stpFileName = prtName & ".stp"
+               Set stepFile = fso.CreateTextFile(ecadModelPath & stpFileName, True)
+               stepFile.Write stepContent
+               stepFile.Close
+               Set stepFile = Nothing
+               Set fso = Nothing
+               
+               DebugLog "STEP SAVED: " & ecadModelPath & stpFileName
+               DebugLog "Size: " & FormatNumber(Len(stepContent)/1024, 1) & " KB"
+               DebugLog "First 100 chars: " & Left(stepContent, 100)
+           Else
+               DebugLog "ERROR: Content too small (" & Len(stepContent) & " chars)"
+               DebugLog "Content: " & stepContent
+               stpFileName = vbNullString
+           End If
+           
+           DebugLog "=========== STEP DOWNLOAD END ==========="
         End If
 
         outFile= ecadModelPath & prtName & ".cb"
